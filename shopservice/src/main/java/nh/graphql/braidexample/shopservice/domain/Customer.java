@@ -3,12 +3,12 @@ package nh.graphql.braidexample.shopservice.domain;
 public class Customer {
     private String id;
     private String name;
-    private String address;
+    private String state;
 
-    public Customer(String id, String name, String address) {
+    public Customer(String id, String name, String state) {
         this.id = id;
         this.name = name;
-        this.address = address;
+        this.state = state;
     }
 
     public String getId() {
@@ -19,8 +19,8 @@ public class Customer {
         return name;
     }
 
-    public String getAddress() {
-        return address;
+    public void setId(String id) {
+        this.id = id;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class Customer {
         return "Customer{" +
             "id='" + id + '\'' +
             ", name='" + name + '\'' +
-            ", address='" + address + '\'' +
+            ", state='" + state + '\'' +
             '}';
     }
 }

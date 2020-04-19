@@ -1,0 +1,6 @@
+{
+  "query": "{  deliveries { id customer { name } } orders {  customer { name }  id    orderItems {      id      quantity  productName  }  } } ",
+
+
+  "variables": null
+}

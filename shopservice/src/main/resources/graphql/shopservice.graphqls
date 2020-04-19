@@ -7,7 +7,7 @@ type OrderItem {
 type Customer {
     id: ID!
     name: String!
-    address: String!
+    state: String!
 }
 
 type Order {

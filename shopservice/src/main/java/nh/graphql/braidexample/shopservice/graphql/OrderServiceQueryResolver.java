@@ -1,6 +1,6 @@
 package nh.graphql.braidexample.shopservice.graphql;
 
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import nh.graphql.braidexample.shopservice.domain.Order;
 import nh.graphql.braidexample.shopservice.domain.OrderRepository;
 import org.slf4j.Logger;

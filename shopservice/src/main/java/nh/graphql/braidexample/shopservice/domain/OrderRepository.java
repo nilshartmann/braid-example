@@ -29,7 +29,7 @@ public class OrderRepository {
             new Order(
                     "order-1",
                     alsZeit("2020-03-17 13:02"),
-                    new Customer("customer-1", "Klaus Müller", "Highway 1234")
+                    new Customer("customer-1", "Klaus Müller", "Active")
                 )
                 .addOrderItem("orderitem-1-1", 2, "Jever")
                 .addOrderItem("orderitem-1-2", 1, "Becks")
@@ -40,7 +40,7 @@ public class OrderRepository {
             new Order(
                     "order-2",
                     alsZeit("2020-04-12 17:19"),
-                    new Customer("customer-2", "Susi Meier", "Mainstreet 57a")
+                    new Customer("customer-2", "Susi Meier", "Premium")
                 )
                 .addOrderItem("orderitem-2-1", 6, "Ratsherrn")
                 .addOrderItem("orderitem-2-2", 12, "Holsten")

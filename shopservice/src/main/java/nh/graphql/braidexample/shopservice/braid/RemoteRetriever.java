@@ -4,7 +4,10 @@ import com.atlassian.braid.source.GraphQLRemoteRetriever;
 import com.atlassian.braid.source.Query;
 import com.google.gson.Gson;
 import graphql.ExecutionInput;
+import graphql.introspection.IntrospectionQuery;
 import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -12,7 +15,11 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class RemoteRetriever<C> implements GraphQLRemoteRetriever<C> {
+    
+    private static final Logger log = LoggerFactory.getLogger(RemoteRetriever.class );
+    
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
     private final String url;
 
     RemoteRetriever(String url) {
@@ -25,12 +32,10 @@ public class RemoteRetriever<C> implements GraphQLRemoteRetriever<C> {
         Gson gson = new Gson();
         OkHttpClient client = new OkHttpClient();
 
-        Map<String, Object> bodyMap = new HashMap(){{
-            put("query", query.getQuery());
-            put( "variables", query.getVariables());
-        }};
+        GraphQLRequest graphQLRequest = GraphQLRequest.forQuery(query);
 
-        String json = gson.toJson(bodyMap);
+        String json = gson.toJson(graphQLRequest);
+        log.info("Sending GraphQL Query '{}' ", json);
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)
@@ -39,11 +44,14 @@ public class RemoteRetriever<C> implements GraphQLRemoteRetriever<C> {
 
         try {
             Response response = client.newCall(request).execute();
-            HashMap<String, Object> jsonResult = gson.fromJson(response.body().string(), HashMap.class);
+            final String string = response.body().string();
+            log.info("Received GraphQL Response '{}'", string);
+
+            HashMap<String, Object> jsonResult = gson.fromJson(string, HashMap.class);
             return CompletableFuture.completedFuture(jsonResult);
         } catch(IOException error) {
-            System.out.println(error);
-            return null;
+            log.error("Fehler beim Ausführen des remote GraphQL Requests: {}", error.getMessage());
+            throw new IllegalStateException(error);
         }
     }
 }
