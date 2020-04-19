@@ -1,0 +1,17 @@
+type Customer {
+    id: ID!
+    name: String!
+    shippingAddress: String!
+}
+
+type Delivery {
+    id: ID!
+    customer: Customer!
+    orderId: String!
+    shippingTime: String!
+}
+
+type Query {
+    deliveries: [Delivery!]!
+    delivery(deliveryId: ID!): Delivery
+}

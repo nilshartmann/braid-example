@@ -1,0 +1,26 @@
+type OrderItem {
+    id: ID!
+    quantity: Int!
+    productName: String!
+}
+
+type Customer {
+    id: ID!
+    name: String!
+    address: String!
+}
+
+type Order {
+    id: ID!
+    customer: Customer!
+    timestamp: String!
+
+    orderItems: [OrderItem!]!
+
+    # todo: Delivery aus Delivery Service
+}
+
+type Query {
+    orderById(orderId: ID!): Order
+    orders: [Order!]!
+}
