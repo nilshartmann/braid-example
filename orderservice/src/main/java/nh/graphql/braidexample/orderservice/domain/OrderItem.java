@@ -2,12 +2,12 @@ package nh.graphql.braidexample.orderservice.domain;
 
 public class OrderItem {
     private String id;
-    private int quanitity;
+    private int quantity;
     private String productName;
 
-    public OrderItem(String id, int quanitity, String productName) {
+    public OrderItem(String id, int quantity, String productName) {
         this.id = id;
-        this.quanitity = quanitity;
+        this.quantity = quantity;
         this.productName = productName;
     }
 
@@ -15,8 +15,8 @@ public class OrderItem {
         return id;
     }
 
-    public int getQuanitity() {
-        return quanitity;
+    public int getQuantity() {
+        return quantity;
     }
 
     public String getProductName() {
@@ -27,7 +27,7 @@ public class OrderItem {
     public String toString() {
         return "OrderItem{" +
             "id='" + id + '\'' +
-            ", quanitity=" + quanitity +
+            ", quanitity=" + quantity +
             ", productName='" + productName + '\'' +
             '}';
     }

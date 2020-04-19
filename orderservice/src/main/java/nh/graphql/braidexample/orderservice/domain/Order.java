@@ -8,13 +8,13 @@ public class Order {
 
     private String id;
     private LocalDateTime timestamp;
-    private String customerName;
+    private Customer customer;
     private List<OrderItem> orderItems = new LinkedList<>();
 
-    public Order(String id, LocalDateTime timestamp, String customerName) {
+    public Order(String id, LocalDateTime timestamp, Customer customer) {
         this.id = id;
         this.timestamp = timestamp;
-        this.customerName = customerName;
+        this.customer = customer;
     }
 
     public Order addOrderItem(String id, int quantitiy, String productName) {
@@ -42,7 +42,7 @@ public class Order {
         return "Order{" +
             "id='" + id + '\'' +
             ", timestamp=" + timestamp +
-            ", customerName='" + customerName + '\'' +
+            ", customer=" + customer +
             ", orderItems=" + orderItems +
             '}';
     }
