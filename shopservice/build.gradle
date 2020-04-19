@@ -17,6 +17,10 @@ configurations {
 
 repositories {
   mavenCentral()
+  maven {
+    // https://bitbucket.org/atlassian/graphql-braid/src/cfb65e852baa51bc3d01e7a2c50e621e90674aca/pom.xml#lines-158
+    url "https://packages.atlassian.com/maven/public"
+  }
 }
 
 dependencies {
@@ -31,6 +35,12 @@ dependencies {
   compile 'com.graphql-java-kickstart:graphiql-spring-boot-starter:7.0.1'
   testCompile 'com.graphql-java-kickstart:graphql-spring-boot-starter-test:7.0.1'
 
+  // --- braid ---
+
+  compile "com.atlassian.braid:graphql-braid:0.23.2"
+
+  compile "com.squareup.okhttp3:okhttp:4.5.0"
+  implementation 'com.google.code.gson:gson:2.8.6'
 }
 
 test {
