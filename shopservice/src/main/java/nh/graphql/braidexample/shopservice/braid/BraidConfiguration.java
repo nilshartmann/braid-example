@@ -7,16 +7,20 @@ import com.atlassian.braid.source.GraphQLRemoteRetriever;
 import com.atlassian.braid.source.QueryExecutorSchemaSource;
 import com.atlassian.braid.source.SchemaLoader;
 import com.atlassian.braid.source.StringSchemaLoader;
+import com.coxautodev.graphql.tools.SchemaParser;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.schema.GraphQLSchema;
+import graphql.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StreamUtils;
 
+import javax.xml.validation.Schema;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
@@ -43,10 +47,18 @@ public class BraidConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
+    public GraphQLQueryInvoker braidBasedQueryInvoker(Braid braid) {
+        return new BraidBasedGraphQLQueryInvoker(braid);
+    }
+
+    @Bean
     public Braid braid(final RemoteRetriever<Object> remoteRetriever) {
 
         final String localSchema = readResource("/graphql/shopservice.graphqls");
         final String deliverySchema = readResource("/graphql/deliveryservice.schema.json");
+
+//        final GraphQLSchema schema = schemaParser.makeExecutableSchema();
 
 
         // ACHTUNG! todo: remote aufruf beim Starten des Sevices. Was passiert, wenn aufgerufener Service
@@ -79,7 +91,7 @@ public class BraidConfiguration {
                     .remoteRetriever(remoteRetriever)
                     .typeRenames(List.of(TypeRename.from("Customer", "DeliveryCustomer")))
                     .build()
-                )
+            )
             .build();
 
         return braid;

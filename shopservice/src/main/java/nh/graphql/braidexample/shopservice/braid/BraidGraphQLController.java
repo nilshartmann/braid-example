@@ -27,22 +27,23 @@ import java.nio.charset.StandardCharsets;
 
 
 /**
- * Demonstriert den Einsatz von Braid, der Zugang hier über einen sehr einfachen Spring
- * Controller
+ * Executes a GraphQL Query using Braid (local + remote schema)
  */
 @RestController
 public class BraidGraphQLController {
-    private static final Logger log = LoggerFactory.getLogger( BraidGraphQLController.class );
+    private static final Logger log = LoggerFactory.getLogger(BraidGraphQLController.class);
 
     @Autowired
     private Braid braid;
 
-    @PostMapping(path="/braid")
+    @PostMapping(path = "/braid")
     @ResponseBody
     public Object executeGraphQL(@RequestBody GraphQLRequest params) {
         log.info("RECEIVED QUERY: '{}'", params);
 
         BraidGraphQL graphql = braid.newGraphQL();
+
+//        GraphQL graphql = GraphQL.newGraphQL(braid.getSchema()).build();
 
         ExecutionResult result = graphql
             .execute(

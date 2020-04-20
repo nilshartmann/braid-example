@@ -1,6 +1,6 @@
 package nh.graphql.braidexample.deliveryservice.graphql;
 
-import graphql.kickstart.tools.GraphQLQueryResolver;
+import com.coxautodev.graphql.tools.GraphQLQueryResolver;
 import nh.graphql.braidexample.deliveryservice.domain.Delivery;
 import nh.graphql.braidexample.deliveryservice.domain.DeliveryRepository;
 import org.slf4j.Logger;
