@@ -25,11 +25,12 @@ public class SimpleGraphQLController {
     public Object execute(@RequestBody GraphQLRequest parameters) {
         log.info("Executing Query {}", parameters);
 
-        log.info("Schem {}", schema);
+        log.info("Schema {}", schema);
 
         GraphQL graphQL = GraphQL.newGraphQL(schema).build();
 
         final ExecutionResult executionResult = graphQL.execute(parameters.getQuery());
+
         final Map<String, Object> specCompliantResult = executionResult.toSpecification();
 
         return specCompliantResult;
