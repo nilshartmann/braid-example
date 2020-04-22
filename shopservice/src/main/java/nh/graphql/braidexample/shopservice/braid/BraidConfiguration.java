@@ -9,15 +9,11 @@ import com.atlassian.braid.source.StringSchemaLoader;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
-import graphql.execution.AsyncExecutionStrategy;
 import graphql.execution.DataFetcherResult;
-import graphql.execution.instrumentation.tracing.TracingInstrumentation;
 import graphql.schema.GraphQLSchema;
 import graphql.servlet.GraphQLQueryInvoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -61,21 +57,23 @@ public class BraidConfiguration {
         final String deliverySchema = readResource("/graphql/deliveryservice.schema.json");
 
         Braid braid = Braid.builder()
+            .instrumentation(new RootLevelFieldCounterInstrumentation())
             .schemaSource(
                 QueryExecutorSchemaSource
                     .builder()
+                    .links(List.of())
                     .namespace(SHOP_NAMESPACE)
                     .schemaLoader(new StringSchemaLoader(SchemaLoader.Type.IDL, localSchema))
                     .localRetriever(query -> {
-                        log.info("Schema {}", schema);
                         GraphQL graphQL = GraphQL.newGraphQL(schema)
                             .build();
 
-                        final String query1 = printNode(query.getQuery());
+                        final String queryString = printNode(query.getQuery());
+                        log.info("Running local sub-query '{}'", queryString);
                         ExecutionInput executionInput = ExecutionInput.newExecutionInput()
                             .operationName(query.getOperationName())
                             .variables(query.getVariables())
-                            .query(query1)
+                            .query(queryString)
                             .build();
 
                         final ExecutionResult executionResult = graphQL.executeAsync(executionInput).join();
@@ -94,6 +92,7 @@ public class BraidConfiguration {
                     .schemaLoader(new StringSchemaLoader(SchemaLoader.Type.INTROSPECTION, deliverySchema))
                     .remoteRetriever(remoteRetriever)
                     .typeRenames(List.of(TypeRename.from("Customer", "DeliveryCustomer")))
+                    .links(List.of())
                     .build()
             )
             .build();

@@ -1,5 +1,5 @@
 {
-  "query": "{  deliveries { id customer { name } } orders {  customer { name }  id    orderItems {      id      quantity  productName  }  } } ",
+  "query": "{  deliveries { id customer { name } } delivery(deliveryId: \"delivery-1\") { id }  orders { id } orderById(orderId: \"order-1\") { id }  }",
 
 
   "variables": null

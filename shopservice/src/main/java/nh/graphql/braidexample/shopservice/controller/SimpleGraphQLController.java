@@ -2,7 +2,6 @@ package nh.graphql.braidexample.shopservice.controller;
 
 import graphql.ExecutionResult;
 import graphql.GraphQL;
-import graphql.execution.AsyncExecutionStrategy;
 import graphql.schema.GraphQLSchema;
 import nh.graphql.braidexample.shopservice.braid.GraphQLRequest;
 import org.slf4j.Logger;

@@ -2,7 +2,6 @@ package nh.graphql.braidexample.shopservice.controller;
 
 import com.atlassian.braid.Braid;
 import com.atlassian.braid.BraidGraphQL;
-import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import nh.graphql.braidexample.shopservice.braid.GraphQLRequest;
 import org.slf4j.Logger;

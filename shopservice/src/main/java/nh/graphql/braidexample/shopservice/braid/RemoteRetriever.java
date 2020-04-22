@@ -3,8 +3,6 @@ package nh.graphql.braidexample.shopservice.braid;
 import com.atlassian.braid.source.GraphQLRemoteRetriever;
 import com.atlassian.braid.source.Query;
 import com.google.gson.Gson;
-import graphql.ExecutionInput;
-import graphql.introspection.IntrospectionQuery;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +33,7 @@ public class RemoteRetriever<C> implements GraphQLRemoteRetriever<C> {
         GraphQLRequest graphQLRequest = GraphQLRequest.forQuery(query);
 
         String json = gson.toJson(graphQLRequest);
-        log.info("Sending GraphQL Query '{}' ", json);
+        log.info("Running GraphQL Remote Query '{}' ", json);
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .url(url)

@@ -3,12 +3,9 @@ package nh.graphql.braidexample.shopservice.braid;
 import com.atlassian.braid.Braid;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
-import graphql.GraphQL;
-import graphql.execution.instrumentation.Instrumentation;
 import graphql.execution.instrumentation.SimpleInstrumentation;
 import graphql.execution.instrumentation.dataloader.DataLoaderDispatcherInstrumentationOptions;
 import graphql.execution.preparsed.NoOpPreparsedDocumentProvider;
-import graphql.execution.preparsed.PreparsedDocumentProvider;
 import graphql.schema.GraphQLSchema;
 import graphql.servlet.*;
 
@@ -16,7 +13,6 @@ import javax.security.auth.Subject;
 import javax.servlet.http.HttpServletResponse;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.function.Supplier;
 
 public class BraidBasedGraphQLQueryInvoker extends GraphQLQueryInvoker  {
 
