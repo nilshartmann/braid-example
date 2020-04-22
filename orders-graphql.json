@@ -1,4 +1,4 @@
 {
-  "query": "{  orders {    id    orderItems {      id      quantity    }  }}",
+  "query": "{  orders { id } orderById(orderId: \"order-1\") { id }  }",
   "variables": null
 }

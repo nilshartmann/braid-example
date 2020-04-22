@@ -20,7 +20,15 @@ type Order {
     # todo: Delivery aus Delivery Service
 }
 
+type Info {
+    braid: Boolean!
+    async: Boolean!
+}
+
 type Query {
     orderById(orderId: ID!): Order
     orders: [Order!]!
+
+    info: Info
+
 }

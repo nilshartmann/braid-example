@@ -61,7 +61,22 @@ public class BraidBasedGraphQLQueryInvoker extends GraphQLQueryInvoker  {
         return query(invocationInput.getSchema(), executionInput);
     }
 
+    // BRAID
     private ExecutionResult query(GraphQLSchema schema, ExecutionInput executionInput) {
-        return braid.newGraphQL().execute(executionInput).join();
+        return braid.newGraphQL().
+            execute(executionInput)
+            .join();
     }
+
+//    // GRAPHQL ------------
+//    private GraphQL newGraphQL(GraphQLSchema schema, Object context) {
+//        ExecutionStrategyProvider executionStrategyProvider = getExecutionStrategyProvider.get();
+//        return GraphQL.newGraphQL(schema)
+//            .queryExecutionStrategy(executionStrategyProvider.getQueryExecutionStrategy())
+//            .mutationExecutionStrategy(executionStrategyProvider.getMutationExecutionStrategy())
+//            .subscriptionExecutionStrategy(executionStrategyProvider.getSubscriptionExecutionStrategy())
+//            .instrumentation(getInstrumentation(context))
+//            .preparsedDocumentProvider(getPreparsedDocumentProvider.get())
+//            .build();
+//    }
 }

@@ -3,84 +3,88 @@ package nh.graphql.braidexample.shopservice.braid;
 import com.atlassian.braid.Braid;
 import com.atlassian.braid.SchemaNamespace;
 import com.atlassian.braid.TypeRename;
-import com.atlassian.braid.source.GraphQLRemoteRetriever;
 import com.atlassian.braid.source.QueryExecutorSchemaSource;
 import com.atlassian.braid.source.SchemaLoader;
 import com.atlassian.braid.source.StringSchemaLoader;
-import com.coxautodev.graphql.tools.SchemaParser;
+import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
+import graphql.execution.AsyncExecutionStrategy;
+import graphql.execution.DataFetcherResult;
+import graphql.execution.instrumentation.tracing.TracingInstrumentation;
 import graphql.schema.GraphQLSchema;
-import graphql.servlet.*;
+import graphql.servlet.GraphQLQueryInvoker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StreamUtils;
 
-import javax.xml.validation.Schema;
-import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static com.atlassian.braid.graphql.language.GraphQLNodes.printNode;
+
+@ConditionalOnProperty(value = "braid-example.enable-braid", havingValue = "true")
 @Configuration
 public class BraidConfiguration {
-
     private static final Logger log = LoggerFactory.getLogger(BraidConfiguration.class);
 
     private final SchemaNamespace SHOP_NAMESPACE = SchemaNamespace.of("shop");
     private final SchemaNamespace DELIVERY_NAMESPACE = SchemaNamespace.of("delivery");
 
     /**
-     * Wird von graphql-spring-boot erzeugt
+     * Created (and registered) by graphql-spring-boot
      */
-    @Autowired
-    private GraphQLSchema schema;
-
     @Bean
     public RemoteRetriever<Object> remoteRetriever() {
         return new RemoteRetriever<>("http://localhost:9080/graphql");
     }
 
     @Bean
-    @ConditionalOnMissingBean
     public GraphQLQueryInvoker braidBasedQueryInvoker(Braid braid) {
+        log.info("Using GraphQLQueryInvoker");
         return new BraidBasedGraphQLQueryInvoker(braid);
     }
 
     @Bean
-    public Braid braid(final RemoteRetriever<Object> remoteRetriever) {
+    public Braid braid(GraphQLSchema schema, final RemoteRetriever<Object> remoteRetriever) {
+        log.info("USING BRAID");
 
         final String localSchema = readResource("/graphql/shopservice.graphqls");
         final String deliverySchema = readResource("/graphql/deliveryservice.schema.json");
 
-//        final GraphQLSchema schema = schemaParser.makeExecutableSchema();
-
-
-        // ACHTUNG! todo: remote aufruf beim Starten des Sevices. Was passiert, wenn aufgerufener Service
-        //                nicht erreichbar ist
-//        final String remoteSchema = remoteRetriever.executeIntrospectionQuery();
-        log.info("Remote deliverySchema Schema: {}", deliverySchema);
-
-        Braid braid = Braid
-            .builder()
+        Braid braid = Braid.builder()
             .schemaSource(
                 QueryExecutorSchemaSource
                     .builder()
                     .namespace(SHOP_NAMESPACE)
-                    // todo: könnte man auch das GraphQLSchema direkt verwenden?
                     .schemaLoader(new StringSchemaLoader(SchemaLoader.Type.IDL, localSchema))
                     .localRetriever(query -> {
-                        GraphQL graphQL = GraphQL.newGraphQL(schema).build();
-                        final ExecutionResult executionResult = graphQL.execute(query.asExecutionInput());
+                        log.info("Schema {}", schema);
+                        GraphQL graphQL = GraphQL.newGraphQL(schema)
+                            .build();
 
-                        // gefährliches Halbwissen
-                        // siehe: https://bitbucket.org/atlassian/graphql-braid/src/cfb65e852baa51bc3d01e7a2c50e621e90674aca/src/test/java/com/atlassian/braid/BraidSchemaConsumerTest.java?at=master#lines-87
-                        return executionResult.getData();
+                        final String query1 = printNode(query.getQuery());
+                        ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+                            .operationName(query.getOperationName())
+                            .variables(query.getVariables())
+                            .query(query1)
+                            .build();
+
+                        final ExecutionResult executionResult = graphQL.executeAsync(executionInput).join();
+
+                        // see: https://bitbucket.org/atlassian/graphql-braid/src/cfb65e852baa51bc3d01e7a2c50e621e90674aca/src/test/java/com/atlassian/braid/BraidSchemaConsumerTest.java?at=master#lines-87
+                        return new DataFetcherResult<>(
+                            executionResult.getData(),
+                            executionResult.getErrors()
+                        );
                     })
                     .build())
             .schemaSource(
